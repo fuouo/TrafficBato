@@ -31,7 +31,8 @@ def bias_variable(value, shape, dtype=tf.float32):
 
 class BaseTensorFlowModel(BaseModel):
 
-    loss_error = []
+    rbm_loss_error = []
+    dbn_loss_error = []
 
     def save(self, save_path):
         import pickle
@@ -218,6 +219,7 @@ class BinaryRBM(BaseBinaryRBM, BaseTensorFlowModel):
             if self.verbose:
                 error = self._compute_reconstruction_error(data)
                 print(">> Epoch %d finished \tRBM Reconstruction error %f" % (iteration, error))
+                self.rbm_loss_error.append(error)
 
     def _compute_hidden_units_matrix(self, matrix_visible_units):
         """
@@ -396,6 +398,7 @@ class TensorFlowAbstractSupervisedDBN(BaseAbstractSupervisedDBN, BaseTensorFlowM
                 feed_dict.update({placeholder: 1.0 for placeholder in self.keep_prob_placeholders})
                 error = sess.run(self.cost_function, feed_dict=feed_dict)
                 print(">> Epoch %d finished \tANN training loss %f" % (iteration, error))
+                self.dbn_loss_error.append(error)
 
     def transform(self, X):
         feed_dict = {self.visible_units_placeholder: X}
