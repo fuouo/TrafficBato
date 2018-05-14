@@ -9,6 +9,10 @@ from .utils import batch_generator
 
 
 class BaseModel(object):
+
+    rbm_loss_error = []
+    dbn_loss_error = []
+
     def save(self, save_path):
         import pickle
 
@@ -27,9 +31,6 @@ class BinaryRBM(BaseEstimator, TransformerMixin, BaseModel):
     """
     This class implements a Binary Restricted Boltzmann machine.
     """
-
-    rbm_loss_error = []
-
 
     def __init__(self,
                  n_hidden_units=100,
@@ -123,7 +124,7 @@ class BinaryRBM(BaseEstimator, TransformerMixin, BaseModel):
             if self.verbose:
                 error = self._compute_reconstruction_error(data)
                 print(">> Epoch %d finished \tRBM Reconstruction error %f" % (iteration, error))
-                rbm_loss_error.append(error)
+                self.rbm_loss_error.append(error)
 
     def _contrastive_divergence(self, vector_visible_units):
         """
@@ -469,7 +470,7 @@ class NumPyAbstractSupervisedDBN(AbstractSupervisedDBN):
             if self.verbose:
                 error = np.mean(np.sum(matrix_error, 1))
                 print(">> Epoch %d finished \tANN training loss %f" % (iteration, error))
-                dbn_loss_error.append(error)
+                self.dbn_loss_error.append(error)
 
     def _backpropagation(self, input_vector, label):
         """
